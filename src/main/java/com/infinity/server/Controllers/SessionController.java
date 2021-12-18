@@ -12,12 +12,14 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.infinity.server.Application;
 import com.infinity.server.Models.CommonMessModel;
+import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import static com.mongodb.client.model.Filters.eq;
 
 public class SessionController extends Thread {
 
 	private Socket socket;
-	
+
 	private CommonMessModel commonMess;
 
 	private BufferedReader inputStreamReader;
@@ -53,7 +55,8 @@ public class SessionController extends Thread {
 				commonMess.setMessage("ACCEPT");
 				outputStreamWriter.println(JSON.toJSONString(commonMess));
 			} else if (status.equals("SEARCH")) {
-				
+				commonMess.setStatus("SEARCH");
+				searchFile();
 			} else if (status.equals("PUBLISH")) {
 
 			} else if (status.equals("UNPUBLISH")) {
@@ -80,6 +83,12 @@ public class SessionController extends Thread {
 			// TODO: handle exception
 			commonMess.setMessage("REFUSE");
 		}
+	}
+
+	public void searchFile() {
+		String messString = ackMessJsonObject.getString("payload");
+		DBObject data = Application.collection.findOne(eq("fileName", messString));
+		LOGGER.info(data);
 	}
 
 	private void closeSocket() {
