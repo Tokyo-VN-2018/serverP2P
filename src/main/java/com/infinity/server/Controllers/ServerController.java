@@ -1,4 +1,4 @@
-package com.infinity.server.Controller;
+package com.infinity.server.Controllers;
 
 import java.net.ServerSocket;
 
