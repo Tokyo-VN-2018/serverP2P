@@ -5,16 +5,28 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.infinity.server.Application;
+import com.infinity.server.Models.CommonMessModel;
+import com.mongodb.DBObject;
 
 public class SessionController extends Thread {
 
 	private Socket socket;
+	
+	private CommonMessModel commonMess;
 
 	private BufferedReader inputStreamReader;
 
 	private PrintWriter outputStreamWriter;
+
+	private JSONObject ackMessJsonObject;
+
+	private static final Logger LOGGER = LogManager.getLogger(SessionController.class);
 
 	public SessionController() {
 		// TODO Auto-generated constructor stub
@@ -27,30 +39,46 @@ public class SessionController extends Thread {
 
 	public void run() {
 		try {
-			this.inputStreamReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			this.outputStreamWriter = new PrintWriter(socket.getOutputStream(), true);
+			inputStreamReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+			outputStreamWriter = new PrintWriter(socket.getOutputStream(), true);
 			String ackMessage = inputStreamReader.readLine();
-			JSONObject ackMessJsonObject = (JSONObject) JSON.parse(ackMessage);
+			ackMessJsonObject = (JSONObject) JSON.parse(ackMessage);
 			String status = ackMessJsonObject.getString("status");
+			commonMess = new CommonMessModel();
 
 			if (status.equals("CONNECT")) {
-
+				commonMess.setStatus("CONNECT");
+				LOGGER.info(ackMessJsonObject.getString("username"));
+				connectClient();
+				commonMess.setMessage("ACCEPT");
+				outputStreamWriter.println(JSON.toJSONString(commonMess));
 			} else if (status.equals("SEARCH")) {
 				
 			} else if (status.equals("PUBLISH")) {
-				
+
 			} else if (status.equals("UNPUBLISH")) {
-				
+
 			} else if (status.equals("INFOREQUEST")) {
-				
+
 			} else if (status.equals("QUIT")) {
-				
+				closeSocket();
 			}
 
 		} catch (Exception e) {
-			System.out.println(e);
+			LOGGER.warn(e);
 		} finally {
 			closeSocket();
+		}
+	}
+
+	public void connectClient() {
+		JSONObject messObject = ackMessJsonObject.getJSONObject("payload");
+		DBObject dbObject = (DBObject) messObject;
+		try {
+			Application.collection.insert(dbObject);
+		} catch (Exception e) {
+			// TODO: handle exception
+			commonMess.setMessage("REFUSE");
 		}
 	}
 
