@@ -31,15 +31,22 @@ public class SessionController extends Thread {
 			this.outputStreamWriter = new PrintWriter(socket.getOutputStream(), true);
 			String ackMessage = inputStreamReader.readLine();
 			JSONObject ackMessJsonObject = (JSONObject) JSON.parse(ackMessage);
-			JSONObject messObject = ackMessJsonObject.getJSONObject("payload");
-			if (messObject.getString("status").equals("CONNECT")) {
+			String status = ackMessJsonObject.getString("status");
+
+			if (status.equals("CONNECT")) {
+
+			} else if (status.equals("SEARCH")) {
 				
-			} else if (messObject.getString("status").equals("SEARCH")) {
+			} else if (status.equals("PUBLISH")) {
 				
-			} else { //Them else if TH khac
-				System.out.println("ERROR");
-				throw new Exception("ERROR");
+			} else if (status.equals("UNPUBLISH")) {
+				
+			} else if (status.equals("INFOREQUEST")) {
+				
+			} else if (status.equals("QUIT")) {
+				
 			}
+
 		} catch (Exception e) {
 			System.out.println(e);
 		} finally {
