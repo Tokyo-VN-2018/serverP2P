@@ -19,12 +19,13 @@ public class Application {
 		ServerController listener = ServerController.getInstance();
 		// TODO Auto-generated method stub
 		try {
-//			ServerController listener = SocketListener.getInstance();
 			MongoClient mongodb = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
 			DB db = mongodb.getDB("sharesData");
 			collection = db.getCollection("listFile");
-			listener.accept();
 			
+			System.out.print("server is running!!");
+			listener.accept();
+			System.out.print("server is running2!!");
 		} catch (Exception e) {
 			LOGGER.warn(e);
 		}

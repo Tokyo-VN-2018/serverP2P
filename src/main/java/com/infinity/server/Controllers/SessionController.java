@@ -4,15 +4,20 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.infinity.server.Application;
 import com.infinity.server.Models.CommonMessModel;
-import com.mongodb.DBCursor;
+import com.infinity.server.Models.SharedFileModel;
+import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import static com.mongodb.client.model.Filters.eq;
 
@@ -44,6 +49,8 @@ public class SessionController extends Thread {
 			inputStreamReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			outputStreamWriter = new PrintWriter(socket.getOutputStream(), true);
 			String ackMessage = inputStreamReader.readLine();
+			System.out.println(ackMessage);
+
 			ackMessJsonObject = (JSONObject) JSON.parse(ackMessage);
 			String status = ackMessJsonObject.getString("status");
 			commonMess = new CommonMessModel();
@@ -53,14 +60,39 @@ public class SessionController extends Thread {
 				LOGGER.info(ackMessJsonObject.getString("username"));
 				connectClient();
 				commonMess.setMessage("ACCEPT");
+				System.out.println(JSON.toJSONString(commonMess));
+
 				outputStreamWriter.println(JSON.toJSONString(commonMess));
+				
+				System.out.println("Connected");
 			} else if (status.equals("SEARCH")) {
+				System.out.println("search func");
 				commonMess.setStatus("SEARCH");
 				searchFile();
+				commonMess.setMessage("ERROR");
+				System.out.println(JSON.toJSONString(commonMess));
+
+				outputStreamWriter.println(JSON.toJSONString(commonMess));
 			} else if (status.equals("PUBLISH")) {
+				commonMess.setStatus("PUBLISH");
+				publicFileHandler();
+				
+				commonMess.setMessage("SUCCESS");
+				System.out.println(JSON.toJSONString(commonMess));
 
+				outputStreamWriter.println(JSON.toJSONString(commonMess));
+				
+				System.out.println("published");
 			} else if (status.equals("UNPUBLISH")) {
+				commonMess.setStatus("UNPUBLISH");
+				unPublicFileHandler();
+				
+				commonMess.setMessage("SUCCESS");
+				System.out.println(JSON.toJSONString(commonMess));
 
+				outputStreamWriter.println(JSON.toJSONString(commonMess));
+				
+				System.out.println("unpublished");
 			} else if (status.equals("INFOREQUEST")) {
 
 			} else if (status.equals("QUIT")) {
@@ -69,26 +101,93 @@ public class SessionController extends Thread {
 
 		} catch (Exception e) {
 			LOGGER.warn(e);
-		} finally {
-			closeSocket();
-		}
+		} 
+//		finally {
+//			closeSocket();
+//		}
 	}
 
 	public void connectClient() {
-		JSONObject messObject = ackMessJsonObject.getJSONObject("payload");
-		DBObject dbObject = (DBObject) messObject;
-		try {
-			Application.collection.insert(dbObject);
-		} catch (Exception e) {
-			// TODO: handle exception
-			commonMess.setMessage("REFUSE");
+//		JSONArray messArray = ackMessJsonObject.getJSONArray("payload");
+//		System.out.println(messArray);
+		List<SharedFileModel> sharedFiles = new ArrayList<SharedFileModel>();
+		sharedFiles = JSON.parseArray(ackMessJsonObject.getString("payload"), SharedFileModel.class);
+		
+		if(sharedFiles.size() !=0) {
+			ListIterator<SharedFileModel> iterator = sharedFiles.listIterator();
+			
+			while(iterator.hasNext()) {
+				 
+				 SharedFileModel element = iterator.next();
+				 BasicDBObject doc1 = new BasicDBObject();
+				 
+			     doc1.append("fileName", element.getFileName()+ "");
+			     doc1.append("filePath",  element.getFilePath()+ "");
+			     doc1.append("sharer",  element.getSharer()+ "");
+			     doc1.append("checksum",  element.getChecksum()+ "");
+			     doc1.append("size",  element.getSize()+ "");
+
+			     Application.collection.insert(doc1);
+			}
+		}
+//		if (messArray.isEmpty() != true) {
+//			System.out.println("not emty");
+//			
+//			JSONObject object = messArray.getJSONObject(0);
+//			DBObject dbObject = (DBObject) JSON.parse(object.toString());
+//			System.out.println(dbObject);
+//			Application.collection.insert(dbObject);
+
+	}
+	
+	public void  publicFileHandler() {
+		System.out.println(ackMessJsonObject);
+		List<SharedFileModel> sharedFiles = new ArrayList<SharedFileModel>();
+		sharedFiles = JSON.parseArray(ackMessJsonObject.getString("payload"), SharedFileModel.class);
+		
+		if(sharedFiles.size() !=0) {
+			ListIterator<SharedFileModel> iterator = sharedFiles.listIterator();
+			while(iterator.hasNext()) {
+				 SharedFileModel element = iterator.next();
+				 BasicDBObject doc1 = new BasicDBObject();
+				 
+			     doc1.append("fileName", element.getFileName()+ "");
+			     doc1.append("filePath",  element.getFilePath()+ "");
+			     doc1.append("sharer",  element.getSharer()+ "");
+			     doc1.append("checksum",  element.getChecksum()+ "");
+			     doc1.append("size",  element.getSize()+ "");
+
+			     Application.collection.insert(doc1);
+			}
+		}
+	}
+	
+	public void  unPublicFileHandler() {
+		System.out.println(ackMessJsonObject);
+		List<SharedFileModel> sharedFiles = new ArrayList<SharedFileModel>();
+		sharedFiles = JSON.parseArray(ackMessJsonObject.getString("payload"), SharedFileModel.class);
+		
+		if(sharedFiles.size() !=0) {
+			ListIterator<SharedFileModel> iterator = sharedFiles.listIterator();
+			while(iterator.hasNext()) {
+				 SharedFileModel element = iterator.next();
+				 BasicDBObject query = new BasicDBObject();
+				 
+				 query.append("fileName", element.getFileName()+ "");
+				 query.append("filePath",  element.getFilePath()+ "");
+				 query.append("sharer",  element.getSharer()+ "");
+				 query.append("checksum",  element.getChecksum()+ "");
+				 query.append("size",  element.getSize()+ "");
+
+			     Application.collection.remove(query);
+			}
 		}
 	}
 
 	public void searchFile() {
 		String messString = ackMessJsonObject.getString("payload");
 		DBObject data = Application.collection.findOne(eq("fileName", messString));
-		LOGGER.info(data);
+		System.out.println(data);
 	}
 
 	private void closeSocket() {
