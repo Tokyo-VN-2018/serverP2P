@@ -16,13 +16,15 @@ public class Application {
 	private static final Logger LOGGER = LogManager.getLogger(Application.class);
 
 	public static void main(String[] args) {
+		ServerController listener = ServerController.getInstance();
 		// TODO Auto-generated method stub
 		try {
 //			ServerController listener = SocketListener.getInstance();
 			MongoClient mongodb = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
 			DB db = mongodb.getDB("sharesData");
 			collection = db.getCollection("listFile");
-			new ServerController().accept();
+			listener.accept();
+			
 		} catch (Exception e) {
 			LOGGER.warn(e);
 		}
