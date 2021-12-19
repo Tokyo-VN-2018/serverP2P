@@ -3,7 +3,7 @@ package com.infinity.server;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.infinity.server.Controllers.ServerController;
+import com.infinity.server.controllers.ServerController;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.MongoClient;

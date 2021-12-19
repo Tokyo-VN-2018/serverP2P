@@ -1,4 +1,4 @@
-package com.infinity.server.Controllers;
+package com.infinity.server.controllers;
 
 import java.net.ServerSocket;
 
@@ -24,15 +24,9 @@ public class ServerController {
 	public void accept() throws Exception {
 
 		ServerSocket listener = new ServerSocket(PORT);
-		try {
-			// Listen to incoming sockets
-			while (true) {
-				new SessionController(listener.accept()).start();
-			}
-		} finally {
-			listener.close();
-		}
-
+		while (true) {
+			new SessionController(listener.accept()).start();
+		}	
 	}
 
 	private static final ServerController INSTANCE = new ServerController();
