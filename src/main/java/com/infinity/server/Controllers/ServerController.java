@@ -10,8 +10,12 @@ public class ServerController {
 	private ServerSocket ServerSocket;
 
 	private static final int PORT = 7777;
-	
+
 	private static final Logger LOGGER = LogManager.getLogger(ServerController.class);
+
+	public static ServerController getInstance() {
+		return INSTANCE;
+	}
 
 	public ServerController() {
 		// TODO Auto-generated constructor stub
@@ -19,16 +23,18 @@ public class ServerController {
 
 	public void accept() throws Exception {
 
-		this.ServerSocket = new ServerSocket(PORT);
-
+		ServerSocket listener = new ServerSocket(PORT);
 		try {
+			// Listen to incoming sockets
 			while (true) {
-				LOGGER.info("Client connect");
-				SessionController session = new SessionController(this.ServerSocket.accept());
+				new SessionController(listener.accept()).start();
 			}
 		} finally {
-			this.ServerSocket.close();
+			listener.close();
 		}
+
 	}
+
+	private static final ServerController INSTANCE = new ServerController();
 
 }
