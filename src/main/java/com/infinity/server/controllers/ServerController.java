@@ -1,4 +1,4 @@
-package com.infinity.server.Controllers;
+package com.infinity.server.controllers;
 
 import java.net.ServerSocket;
 
@@ -10,8 +10,12 @@ public class ServerController {
 	private ServerSocket ServerSocket;
 
 	private static final int PORT = 7777;
-	
+
 	private static final Logger LOGGER = LogManager.getLogger(ServerController.class);
+
+	public static ServerController getInstance() {
+		return INSTANCE;
+	}
 
 	public ServerController() {
 		// TODO Auto-generated constructor stub
@@ -19,16 +23,12 @@ public class ServerController {
 
 	public void accept() throws Exception {
 
-		this.ServerSocket = new ServerSocket(PORT);
-
-		try {
-			while (true) {
-				LOGGER.info("Client connect");
-				SessionController session = new SessionController(this.ServerSocket.accept());
-			}
-		} finally {
-			this.ServerSocket.close();
-		}
+		ServerSocket listener = new ServerSocket(PORT);
+		while (true) {
+			new SessionController(listener.accept()).start();
+		}	
 	}
+
+	private static final ServerController INSTANCE = new ServerController();
 
 }

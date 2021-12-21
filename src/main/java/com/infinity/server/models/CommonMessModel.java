@@ -1,4 +1,4 @@
-package com.infinity.server.Models;
+package com.infinity.server.models;
 
 public class CommonMessModel {
 
