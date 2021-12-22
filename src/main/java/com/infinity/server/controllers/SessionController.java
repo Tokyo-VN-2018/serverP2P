@@ -169,7 +169,7 @@ public class SessionController extends Thread {
 					doc1.append("sharer", element.getSharer() + "");
 					doc1.append("checksum", element.getChecksum() + "");
 					doc1.append("size", element.getSize() + "");
-					doc1.append("clientIpAddress", clientIpAddress + "");
+					doc1.append("clientIPAddress", clientIpAddress + "");
 					doc1.append("commandPort", commandPort + "");
 
 					Application.collection.insert(doc1);
@@ -215,7 +215,7 @@ public class SessionController extends Thread {
 					doc1.append("sharer", element.getSharer() + "");
 					doc1.append("checksum", element.getChecksum() + "");
 					doc1.append("size", element.getSize() + "");
-					doc1.append("clientIpAddress", clientIpAddress + "");
+					doc1.append("clientIPAddress", clientIpAddress + "");
 					doc1.append("commandPort", commandPort + "");
 
 					Application.collection.remove(doc1);
