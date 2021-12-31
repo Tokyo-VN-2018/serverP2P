@@ -153,8 +153,7 @@ class Service {
 			v1 = gson.fromJson(i, SharedFileModel.class);
 			fileList.add(new Document().append("fileName", v1.getFileName()).append("filePath", v1.getFilePath())
 					.append("sharer", username).append("checksum", v1.getChecksum()).append("size", v1.getSize())
-					.append("clientIpAddress", clientIpAddress).append("commandPort", commandPort)
-					.append("sessionId", sessionId));
+					.append("ip", clientIpAddress).append("commandPort", commandPort).append("sessionId", sessionId));
 		}
 		if (fileList.size() > 0) {
 			MongoController.collection.insertMany(fileList);
