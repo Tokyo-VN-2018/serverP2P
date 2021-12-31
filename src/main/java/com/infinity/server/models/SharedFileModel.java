@@ -6,8 +6,6 @@ public class SharedFileModel {
 
 	private String filePath;
 
-	private String sharer;
-
 	private String checksum;
 
 	private String size;
@@ -18,10 +16,6 @@ public class SharedFileModel {
 
 	public String getFilePath() {
 		return filePath;
-	}
-
-	public String getSharer() {
-		return sharer;
 	}
 
 	public String getChecksum() {
