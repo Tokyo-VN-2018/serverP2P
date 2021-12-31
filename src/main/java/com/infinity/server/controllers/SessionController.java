@@ -47,12 +47,11 @@ class SessionController {
 				String status = jsonObject.get("status").getAsString();
 				try {
 					if (status.equals("CONNECT")) {
+						service.setUsername(jsonObject.get("username").getAsString());
 						service.setCommandPort(jsonObject.get("commandPort").getAsString());
 						service.connectHandler();
 					} else if (status.equals("SEARCH")) {
 						service.searchHandler();
-					} else if (status.equals("INFOREQUEST")) {
-						service.infoReqHandler();
 					} else if (status.equals("PUBLISH")) {
 						service.publishHandler();
 					} else if (status.equals("UNPUBLISH")) {
