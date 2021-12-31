@@ -90,7 +90,8 @@ class Service {
 
 	void searchHandler() {
 		String search = jsonObject.get("payload").getAsString();
-		MongoCursor<Document> cursor = MongoController.collection.find(Filters.regex("fileName", search)).iterator();
+		MongoCursor<Document> cursor = MongoController.collection
+				.find(and(Filters.regex("fileName", search), Filters.ne("sessionId", sessionId))).iterator();
 		JsonArray elements = new JsonArray();
 		while (cursor.hasNext()) {
 			Document jsonDocument = cursor.next();
