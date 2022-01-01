@@ -35,16 +35,17 @@ class SessionController {
 		try {
 
 			service.setOutputStreamWriter(outputStreamWriter);
-			service.setSessionId(socket.getInetAddress().getHostAddress() + socket.getPort());
+			service.setSessionId(socket.getInetAddress().getHostAddress() + ": " + socket.getPort());
 			service.setClientIpAddress(socket.getInetAddress().getHostAddress());
 			service.setGson(gson);
 
 			while (socket.isConnected()) {
 				ackMessage = inputStreamReader.readLine();
-				System.out.println(ackMessage);
+				System.out.println("Client sent to:\n" + ackMessage);
 				JsonObject jsonObject = JsonParser.parseString(ackMessage).getAsJsonObject();
 				service.setJsonObject(jsonObject);
 				String status = jsonObject.get("status").getAsString();
+				System.out.println("Server sent:");
 				try {
 					if (status.equals("CONNECT")) {
 						service.setUsername(jsonObject.get("username").getAsString());

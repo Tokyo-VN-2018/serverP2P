@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -94,6 +95,7 @@ class Service {
 			fileList.clear();
 		}
 		CommonMessModel mess = new CommonMessModel("CONNECT", "ACCEPT");
+		System.out.println(gson.toJson(mess));
 		outputStreamWriter.println(gson.toJson(mess));
 	}
 
@@ -160,6 +162,7 @@ class Service {
 			fileList.clear();
 		}
 		CommonMessModel mess = new CommonMessModel("PUBLISH", "SUCCESS");
+		System.out.println(gson.toJson(mess));
 		outputStreamWriter.println(gson.toJson(mess));
 	}
 
@@ -173,12 +176,13 @@ class Service {
 			MongoController.collection.deleteMany(query);
 		}
 		CommonMessModel mess = new CommonMessModel("UNPUBLISH", "SUCCESS");
+		System.out.println(gson.toJson(mess));
 		outputStreamWriter.println(gson.toJson(mess));
 	}
 
 	void errorHandler() {
-		String fileId = jsonObject.get("payload").toString();
-		Bson query = eq("_id", fileId);
+		String fileId = jsonObject.get("payload").getAsString();
+		Bson query = eq("_id", new ObjectId(fileId));
 		MongoCursor<Document> cursor = MongoController.collection.find(query).iterator();
 		if (cursor.hasNext()) {
 			Document jsonDocument = cursor.next();
