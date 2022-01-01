@@ -3,6 +3,8 @@ package com.infinity.server.controllers;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
+
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -101,8 +103,9 @@ class Service {
 
 	void searchHandler() {
 		String search = jsonObject.get("payload").getAsString();
+		Pattern pattern = Pattern.compile(search, Pattern.CASE_INSENSITIVE);
 		MongoCursor<Document> cursor = MongoController.collection
-				.find(and(Filters.regex("fileName", search), Filters.ne("sessionId", sessionId))).iterator();
+				.find(and(Filters.regex("fileName", pattern), Filters.ne("sessionId", sessionId))).iterator();
 		JsonArray elements = new JsonArray();
 		while (cursor.hasNext()) {
 			Document jsonDocument = cursor.next();
