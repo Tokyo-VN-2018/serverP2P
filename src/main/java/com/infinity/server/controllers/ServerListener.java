@@ -18,6 +18,14 @@ public class ServerListener {
 	public static void Listener() throws IOException {
 
 		MongoController.create();
+		MongoController.collection.drop();
+
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			public void run() {
+				System.out.println("Server off");
+				MongoController.collection.drop();
+			}
+		});
 
 		while (true) {
 			ThreadController sessionSocket = new ThreadController();
