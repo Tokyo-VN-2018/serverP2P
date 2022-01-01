@@ -6,24 +6,26 @@ public class CommonMessModel {
 
 	private String message;
 
-	public String getStatus() {
+	String getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	void setStatus(String status) {
 		this.status = status;
 	}
 
-	public String getMessage() {
+	String getMessage() {
 		return message;
 	}
 
-	public void setMessage(String message) {
+	void setMessage(String message) {
 		this.message = message;
 	}
 
-	public CommonMessModel() {
-		// TODO Auto-generated constructor stub
+	public CommonMessModel(String status, String message) {
+		super();
+		this.status = status;
+		this.message = message;
 	}
 
 }
