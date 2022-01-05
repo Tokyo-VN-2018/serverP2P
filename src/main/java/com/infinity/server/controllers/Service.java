@@ -187,7 +187,7 @@ class Service {
 		String fileId = jsonObject.get("payload").getAsString();
 		Bson query = eq("_id", new ObjectId(fileId));
 		MongoCursor<Document> cursor = MongoController.collection.find(query).iterator();
-		if (cursor.hasNext()) {
+		while (cursor.hasNext()) {
 			Document jsonDocument = cursor.next();
 			int count = 1;
 			if (jsonDocument.get("errorCount") != null) {
