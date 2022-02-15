@@ -20,6 +20,7 @@ import com.mongodb.client.model.Filters;
 
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.or;
 
 class Service {
 
@@ -105,7 +106,9 @@ class Service {
 		String search = jsonObject.get("payload").getAsString();
 		Pattern pattern = Pattern.compile(search, Pattern.CASE_INSENSITIVE);
 		MongoCursor<Document> cursor = MongoController.collection
-				.find(and(Filters.regex("fileName", pattern), Filters.ne("sessionId", sessionId))).iterator();
+				.find(or(and(Filters.regex("fileName", pattern), Filters.ne("sessionId", sessionId)),
+						and(Filters.regex("sharer", pattern), Filters.ne("sessionId", sessionId))))
+				.iterator();
 		JsonArray elements = new JsonArray();
 		while (cursor.hasNext()) {
 			Document jsonDocument = cursor.next();
