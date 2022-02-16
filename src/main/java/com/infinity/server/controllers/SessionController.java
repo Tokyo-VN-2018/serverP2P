@@ -1,5 +1,6 @@
 package com.infinity.server.controllers;
 
+import java.awt.desktop.AboutHandler;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -45,7 +46,9 @@ class SessionController {
 				JsonObject jsonObject = JsonParser.parseString(ackMessage).getAsJsonObject();
 				service.setJsonObject(jsonObject);
 				String status = jsonObject.get("status").getAsString();
-				System.out.println("Server sent to " + service.getSessionId());
+				if (!status.equals("ERRDOWNLOAD") && !status.equals("QUIT")) {
+					System.out.println("Server sent to " + service.getSessionId());
+				}
 				try {
 					if (status.equals("CONNECT")) {
 						service.setUsername(jsonObject.get("username").getAsString());
