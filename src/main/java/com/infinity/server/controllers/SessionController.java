@@ -1,6 +1,5 @@
 package com.infinity.server.controllers;
 
-import java.awt.desktop.AboutHandler;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
